@@ -1,0 +1,11 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.8.1'
+}
+
+group = 'io.github.zachoooo'
+version = '0.0001'
+description = 'Battlepass system'
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:7.0.0'
+}

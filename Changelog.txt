@@ -1,0 +1,15 @@
+v0.0001
+- Created /battlepass command
+	- Opens GUI for command
+	- Added Missions and Rewards GUI buttons
+	- Created Missions and Rewards GUI
+- Basic Setup
+	- Factories:
+		InventoryFactory - Creates and returns Inventories (For Navigation)
+	- Observers:
+		ActionObservers - Handles the actions towards inventories
+- Current Functionalies
+	- Entering /battlepass or /bp opens the Battlepass main gui
+	- Rewards button can be navigated and contains basis for battlepass level
+- Battlepass main GUI
+	- Has Missions and Rewards Buttons
