@@ -1,3 +1,20 @@
+v.0010
+- Main GUI
+	- Updated and populated
+- Created GlobalData Singleton
+	- Stores Navigation button display names
+	- Stores Rewards data (Free & Premium)
+- ActionObserver:
+	- Uses NavigationList in GlobalData for determining the next GUI
+	- Classifies Navigation button and Reward Button
+	- Classifies available rewards from unavailable rewards based on tiers
+	- Gives free rewards to player based on Reward data from GlobalData
+	
+- InventoryFactory:
+	- getRewardsInv(int) : Generates item list based on Rewards data from GlobalData
+	
+- Setup some Class and Sequence Diagram UMLs
+
 v0.0001
 - Created /battlepass command
 	- Opens GUI for command
@@ -13,3 +30,4 @@ v0.0001
 	- Rewards button can be navigated and contains basis for battlepass level
 - Battlepass main GUI
 	- Has Missions and Rewards Buttons
+

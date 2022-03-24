@@ -40,7 +40,7 @@ public class BattlePass implements CommandExecutor {
         //Check if entered by player
         if(src instanceof Player)
         {
-            p = (Player)src;
+            Player p = (Player)src;
             Text t = LiteralText.builder("You entered the command").toText();
             p.sendMessage(t); //Send message to player
 
@@ -54,22 +54,6 @@ public class BattlePass implements CommandExecutor {
         return CommandResult.empty();
     }
 
-
-//    @Listener
-//    public void clickedInv(ClickInventoryEvent.Primary ev)
-//    {
-//        p.sendMessage(Text.of("Inv Clicked"));
-////        Slot btnS = ev.;
-////        if(ev.getCause() instanceof ItemStack)
-////            p.sendMessage(Text.of("Clicked Check"));
-//        //p.sendMessage(Text.of("Clicked Inventory"));
-//    }
-
     //Main Inv, Mission Inv, Reward Inv
     Inventory currInv;
-    //Type of inventory to open
-    String invCode;
-    Player p;
-    Thread switchThread;
-
 }

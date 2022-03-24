@@ -7,5 +7,5 @@ version = '0.0001'
 description = 'Battlepass system'
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:7.0.0'
+    compile 'org.spongepowered:spongeapi:7.4.0'
 }
