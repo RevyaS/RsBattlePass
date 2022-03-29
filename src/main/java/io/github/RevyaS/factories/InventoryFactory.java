@@ -2,7 +2,10 @@ package io.github.RevyaS.factories;
 
 import io.github.RevyaS.MainPlugin;
 import io.github.RevyaS.data.GlobalData;
+import io.github.RevyaS.data.containers.QuestData;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
@@ -28,6 +31,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.yaml.snakeyaml.serializer.Serializer;
 
 import javax.xml.crypto.Data;
+import java.net.SocketImpl;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -38,7 +42,6 @@ public class InventoryFactory {
     //func runs when event occurs
     public static Inventory getMainInv()
     {
-        if(main != null) return main;
 
         //Prepare Custom Inventory
         InventoryTitle invT = new InventoryTitle(Text.of("BattlePass"));
@@ -84,7 +87,14 @@ public class InventoryFactory {
         btnName = TextSerializers.FORMATTING_CODE.deserialize("&bSeason 1 Battle Pass");
         btn.offer(Keys.DISPLAY_NAME, btnName);
         lores = new ArrayList<Text>();
-        lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Free Battle Pass"));
+        lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Free Battle Pass")); //Battle Pass Type
+        lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Tier " + GlobalData.getCurrTier()));
+        int currTier = GlobalData.getCurrTier();
+        List<Integer> nextTier = GlobalData.getMaxTiers();
+        if(currTier >= nextTier.size())
+            lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Max Tier Reached"));
+        else
+            lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Next Tier: " + GlobalData.getCurrPoints() + "/" + GlobalData.getMaxTiers().get(currTier)));
         btn.offer(Keys.ITEM_LORE, lores);
         btnSlot = inv.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotPos.of(4, 1)));
         btnSlot.set(btn);
@@ -99,40 +109,85 @@ public class InventoryFactory {
         btnSlot = inv.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotPos.of(4, 3)));
         btnSlot.set(btn);
 
-        main = inv;
         return inv;
     }
 
     //Mission Inventory
     public static Inventory getMissionsInv()
     {
-        if(missions != null) return missions;
 
         InventoryTitle title = new InventoryTitle(Text.of("BattlePass Missions"));
-        InventoryDimension dims = new InventoryDimension(9, 4);
+        InventoryDimension dims = new InventoryDimension(9, 3);
         Inventory inv = Inventory.builder().
                 property("inventorytitle", title).
                 property("inventorydimension", dims).
+                listener(ClickInventoryEvent.Primary.class, (ev) -> {
+                    ev.setCancelled(true);
+                }).
                 build(MainPlugin.getInstance());
 
-        missions = inv;
+        //Create daily missions
+        ItemStack item = ItemStack.builder().itemType(ItemTypes.BOOK).build();
+        Text name = TextSerializers.FORMATTING_CODE.deserialize("&bDaily Missions &7(Click)");
+        item.offer(Keys.DISPLAY_NAME, name);
+        Slot itemSlot = inv.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotPos.of(2,1)));
+        itemSlot.set(item);
+
+        //Create weekly missions
+        item = ItemStack.builder().itemType(ItemTypes.BOOK).build();
+        name = TextSerializers.FORMATTING_CODE.deserialize("&bWeekly Missions &7(Click)");
+        item.offer(Keys.DISPLAY_NAME, name);
+        itemSlot = inv.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotPos.of(6, 1)));
+        itemSlot.set(item);
+
+        return inv;
+    }
+
+    //Daily Missions
+    public static  Inventory getDailyMissions()
+    {
+        InventoryTitle title = new InventoryTitle(Text.of("Daily Missions"));
+        InventoryDimension dims = new InventoryDimension(9, 5);
+        Inventory inv = Inventory.builder().
+                property("inventorytitle", title).
+                property("inventorydimension", dims).build(MainPlugin.getInstance());
+        //Create missions
+        int x = 1, y = 1;
+        for(QuestData qData: GlobalData.getDailyQuests().values())
+        {
+            ItemStack quest = ItemStack.builder().itemType(qData.getIcon()).build();
+            quest.offer(Keys.DISPLAY_NAME, Text.of(qData.getDescription()));
+            List<Text> prog = new ArrayList<Text>();
+            prog.add(qData.getPoints().getFormattedText());
+            prog.add(qData.getProgress().getFormattedText());
+            quest.offer(Keys.ITEM_LORE, prog);
+            Slot qPos = inv.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotPos.of(x, y)));
+            qPos.set(quest);
+
+            x++;
+            if(x >8) {
+                x = 1;
+                y++;
+            }
+        }
+
+//        BlockState blk = BlockState.builder().blockType(BlockTypes.GRASS).build();
+//        ItemStack blk = ItemStack.builder().itemType(ItemTypes.GRASS).build();
+//        blk.offer(Keys.DISPLAY_NAME, Text.of("Walk Quest"));
+//        Slot blkSlot = inv.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotPos.of(1,1)));
+//        blkSlot.set(blk);
+
         return inv;
     }
 
     public static Inventory getRewardsInv(int page)
     {
-        if(rewards != null)
-            if(rewards[page - 1] != null)
-                return rewards[page - 1];
-
         int bpMax = GlobalData.getMaxBp(), length = 9,
             pageCount = bpMax / length + 1;
         boolean isPremium = true;
-        if(rewards == null)
-            rewards = new Inventory[pageCount];
 
         //Create rewards
-        int bpLevel = 2,
+        int bpLevel = GlobalData.getCurrTier(),
             //Compute for page:
             toShow = (length * page > bpMax) ? bpMax % length : length,
             start = (page - 1) * length + 1,
@@ -211,8 +266,6 @@ public class InventoryFactory {
 //        //Insert to Slot
 //        Slot saSlot = inv.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotPos.of(0,0)));
 //        saSlot.set(sampleCollection);
-
-        rewards[page - 1] = inv;
 //        rewards = inv;
         return inv;
     }
@@ -256,7 +309,5 @@ public class InventoryFactory {
     //Keeps generated inventory due to issues of inventories not opening
     //Might be caused by the time it takes to generate a new one
     //So I'll just sacrifice memory for performance
-    static Inventory main, missions;
-//    static  Inventory rewards;
-    static Inventory[] rewards;
+    //PS. I was stupid and keeping Inventories don't do shit
 }

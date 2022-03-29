@@ -2,8 +2,10 @@ package io.github.RevyaS;
 
 import com.google.inject.Inject;
 import io.github.RevyaS.commands.BattlePass;
+import io.github.RevyaS.data.containers.QuestData;
 import io.github.RevyaS.factories.InventoryFactory;
-import io.github.RevyaS.observers.ActionObserver;
+import io.github.RevyaS.observers.BlockObserver;
+import io.github.RevyaS.observers.InventoryObserver;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
@@ -62,7 +64,13 @@ public class MainPlugin {
         mp = this;
 
         //Register EventListeners
-        game.getEventManager().registerListeners(this, ActionObserver.getInstance());
+        game.getEventManager().registerListeners(this, InventoryObserver.getInstance());
+        Sponge.getServer().getBroadcastChannel().send(Text.of("Registering BlockObserver"));
+        game.getEventManager().registerListeners(this, BlockObserver.getInstance());
+
+        //TEST AREA
+//        QuestData qd = QuestData.builder().build();
+//        Sponge.getServer().getBroadcastChannel().send(Text.of(qd.toString()));
     }
 
 

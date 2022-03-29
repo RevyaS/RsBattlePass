@@ -1,33 +1,42 @@
-v.0010
-- Main GUI
-	- Updated and populated
-- Created GlobalData Singleton
-	- Stores Navigation button display names
-	- Stores Rewards data (Free & Premium)
-- ActionObserver:
-	- Uses NavigationList in GlobalData for determining the next GUI
-	- Classifies Navigation button and Reward Button
-	- Classifies available rewards from unavailable rewards based on tiers
-	- Gives free rewards to player based on Reward data from GlobalData
-	
-- InventoryFactory:
-	- getRewardsInv(int) : Generates item list based on Rewards data from GlobalData
-	
-- Setup some Class and Sequence Diagram UMLs
+v.0020 Centralized data for rewards, Quest and point system implementation
+    * Main GUI
+        - Updated and populated
+    * Created GlobalData Singleton
+        - Stores Navigation button display names
+        - Stores Rewards data (Free & Premium)
+        - Stores Daily Quest data
+    * Renamed ActionObserver to InventoryObserver
+    * Created BlockObserver to handle block related events
+        - Checks GlobalData's quest data to update values
+    * Created QuestData container to store all info needed in a quest
+    * Created QuestType to classify quests
+    * InventoryObserver:
+        - Uses NavigationList in GlobalData for determining the next GUI
+        - Classifies Navigation button and Reward Button
+        - Classifies available rewards from unavailable rewards based on tiers
+        - Gives free rewards to player based on Reward data from GlobalData
+
+    * InventoryFactory:
+        - getRewardsInv(int) : Generates item list based on Rewards data from GlobalData
+        - getMissionsInv() : added Weekly and Daily quest buttons
+        Created:
+        - getDailyMissions() : Returns list of daily missions
+        - getMainInv() : Presents current points and needed points, also the current tier
+    * Created test class for QuestData
+    * Setup some Class and Sequence Diagram UMLs
 
 v0.0001
-- Created /battlepass command
-	- Opens GUI for command
-	- Added Missions and Rewards GUI buttons
-	- Created Missions and Rewards GUI
-- Basic Setup
-	- Factories:
-		InventoryFactory - Creates and returns Inventories (For Navigation)
-	- Observers:
-		ActionObservers - Handles the actions towards inventories
-- Current Functionalies
-	- Entering /battlepass or /bp opens the Battlepass main gui
-	- Rewards button can be navigated and contains basis for battlepass level
-- Battlepass main GUI
-	- Has Missions and Rewards Buttons
-
+    * Created /battlepass command
+        - Opens GUI for command
+        - Added Missions and Rewards GUI buttons
+        - Created Missions and Rewards GUI
+    * Basic Setup
+        - Factories:
+            InventoryFactory - Creates and returns Inventories (For Navigation)
+        - Observers:
+            ActionObservers - Handles the actions towards inventories
+    * Current Functionalies
+        - Entering /battlepass or /bp opens the Battlepass main gui
+        - Rewards button can be navigated and contains basis for battlepass level
+    * Battlepass main GUI
+        - Has Missions and Rewards Buttons

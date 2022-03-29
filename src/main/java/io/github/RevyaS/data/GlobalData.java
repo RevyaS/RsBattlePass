@@ -1,13 +1,11 @@
 package io.github.RevyaS.data;
 
-import com.google.common.base.Supplier;
-import io.github.RevyaS.factories.InventoryFactory;
+import io.github.RevyaS.data.containers.QuestData;
+import io.github.RevyaS.data.types.QuestType;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.ItemType;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +17,8 @@ public class GlobalData {
     private GlobalData() {
         initNavList();
         initRewardsMap();
+        initQuestList();
+        initTierScale();
     }
 
     //Init Functions
@@ -29,8 +29,15 @@ public class GlobalData {
         navList.add("&bRewards&7 (Click)");
         navList.add("&bNext Page &7(Click)");
         navList.add("&bPrevious Page &7(Click)");
+        navList.add("&bDaily Missions &7(Click)");
     }
 
+    private void initTierScale()
+    {
+        tierMax = new ArrayList<Integer>();
+        tierMax.add(20);
+        tierMax.add(40);
+    }
 
     private void initRewardsMap()
     {
@@ -92,6 +99,13 @@ public class GlobalData {
     }
 
 
+    private void initQuestList()
+    {
+        dailyQuestList = new HashMap<QuestType, QuestData>();
+        QuestData qd = new QuestData(QuestType.WALK_BLOCK, 10, 30);
+        dailyQuestList.put(QuestType.WALK_BLOCK, qd);
+    }
+
     public static GlobalData getInstance() {
         if(instance != null) return instance;
         instance = new GlobalData();
@@ -110,15 +124,42 @@ public class GlobalData {
     public static Map<Integer, DataContainer[]> getRewardsMapFree() {return getInstance().rewardsMapFree;}
     public static Map<Integer, DataContainer[]> getRewardsMapPremium() {return getInstance().rewardsMapPremium;}
 
+    //Quests
+    public static Map<QuestType, QuestData> getDailyQuests() {return getInstance().dailyQuestList;}
+
+    //Tiers
+    public static List<Integer> getMaxTiers() {return getInstance().tierMax;}
+
+    //Data
+    public static int getCurrTier() {return getInstance().currTier;}
+
+    public static int getCurrPoints() {return getInstance().currPoints;}
+
+    //Setters
+    public static void updateCurrPoints(int addedPoints) {
+        GlobalData instance = getInstance();
+        instance.currPoints += addedPoints;
+//        if(instance.currTier >= instance.tierMax.size()) return;
+        while(instance.currTier < instance.tierMax.size() && instance.currPoints >= instance.tierMax.get(instance.currTier))
+        {
+            instance.currPoints %= instance.tierMax.get(instance.currTier);
+            instance.currTier++;
+        }
+    }
+
     static GlobalData instance;
     //Global Variables
-    int bpMax = 20; //Max level of BP determines the amount of pages
-
+    int bpMax = 20, //Max level of BP determines the amount of pages
+        currTier = 0, currPoints = 0; //Current Tier Level
 
     //List of Display Names that's meant for navigation
     List<String> navList;
+    List<Integer> tierMax;
 
     Map<Integer, DataContainer[]> rewardsMapFree;
     Map<Integer, DataContainer[]> rewardsMapPremium;
+
+    Map<QuestType, QuestData> dailyQuestList;
+
 }
 
