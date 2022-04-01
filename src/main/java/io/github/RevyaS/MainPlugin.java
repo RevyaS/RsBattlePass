@@ -64,9 +64,9 @@ public class MainPlugin {
         mp = this;
 
         //Register EventListeners
-        game.getEventManager().registerListeners(this, InventoryObserver.getInstance());
-        Sponge.getServer().getBroadcastChannel().send(Text.of("Registering BlockObserver"));
-        game.getEventManager().registerListeners(this, BlockObserver.getInstance());
+//        game.getEventManager().registerListeners(this, InventoryObserver.getInstance());
+//        Sponge.getServer().getBroadcastChannel().send(Text.of("Registering BlockObserver"));
+//        game.getEventManager().registerListeners(this, BlockObserver.getInstance());
 
         //TEST AREA
 //        QuestData qd = QuestData.builder().build();
