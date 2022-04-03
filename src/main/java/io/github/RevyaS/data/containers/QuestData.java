@@ -1,25 +1,30 @@
 package io.github.RevyaS.data.containers;
 
+import io.github.RevyaS.MainPlugin;
 import io.github.RevyaS.data.GlobalData;
 import io.github.RevyaS.data.types.QuestType;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.event.cause.EventContextKey;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-public class QuestData {
-//    public QuestData(QuestDataBuilder builderData)
-//    {
-//        type = builderData.type;
-//        description = builderData.description;
-//    }
+import javax.inject.Inject;
+import java.awt.*;
 
-    public QuestData(QuestType type, int totalProg, int points)
+public class QuestData {
+    GlobalData globalData;
+
+    public QuestData(QuestType type, int totalProg, int points, GlobalData globalData)
     {
         this.totalProg = totalProg;
         this.type = type;
         this.points = points;
         description = getDescription();
+        this.globalData = globalData;
         //Set Icon
         switch (type)
         {
@@ -84,22 +89,28 @@ public class QuestData {
     //SETTERS
     public void updateProgress(int addedProgress)
     {
+        Sponge.getServer().getBroadcastChannel().send(Text.of("Updating Progress"));
         currProg += addedProgress;
         if(currProg >= totalProg) {
             completed = true;
-            GlobalData.updateCurrPoints(points);
+            //Fire Event
+            globalData.updateCurrPoints(points);
         }
     }
 
+    public GlobalData getGlobalData() {
+        return globalData;
+    }
 
+    //    public static QuestDataBuilder builder() {return new QuestDataBuilder();}
 
-//    public static QuestDataBuilder builder() {return new QuestDataBuilder();}
-
-    private QuestType type;
+    private final QuestType type;
     private TextableString description;
-    private int currProg = 0, totalProg, points;
+    private int currProg = 0;
+    private final int totalProg, points;
     private ItemType icon; //What the icon looks like
     private boolean completed = false;
+
 
     //Builder
 //    public static class QuestDataBuilder

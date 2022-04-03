@@ -1,6 +1,6 @@
 package io.github.RevyaS.observers;
 
-import com.google.inject.Inject;
+import dagger.Component;
 import io.github.RevyaS.MainPlugin;
 import io.github.RevyaS.data.GlobalData;
 import io.github.RevyaS.factories.InventoryFactory;
@@ -21,6 +21,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import javax.inject.Inject;
 import javax.swing.*;
 import java.util.*;
 import java.util.function.Supplier;
@@ -122,30 +123,22 @@ public class InventoryObserver {
         }).submit(MainPlugin.getInstance());
     }
 
+    public InventoryFactory getInventoryFactory() {return inventoryFactory;}
 
-//    @Listener
-//    public void onOpenInventory(InteractInventoryEvent ev) {
-//        Optional<Player> opP = ev.getCause().first(Player.class);
-//        if (!opP.isPresent()) {
-//            Sponge.getServer().getBroadcastChannel().send(Text.of("Player not present"));
-//            ev.setCancelled(true);
-//        }
-//        Sponge.getServer().getBroadcastChannel().send(Text.of("Player Present"));
-////        Player player = opP.get();
-////        Optional<Account> opAcc = plugin.getDatabase().getAccount(player);
-////        Sponge.getServer().getBroadcastChannel().send(Text.of("Account Exists: " + opAcc.isPresent()));
-//    }
+    public GlobalData getGlobalData() {
+        return globalData;
+    }
 
-    //Private constructors makes sure no other instance of this Singleton is made
-//    public InventoryObserver(GlobalData globalData, InventoryFactory inventoryFactory) {
-//        this.globalData = globalData;
-//    }
-
-
+    @Inject
+    public InventoryObserver(InventoryFactory inventoryFactory, GlobalData globalData)
+    {
+        this.inventoryFactory = inventoryFactory;
+        this.globalData = globalData;
+    }
 
     //References
     private GlobalData globalData;
-    private InventoryFactory inventoryFactory;
+    private final InventoryFactory inventoryFactory;
 
     //Values
     private int currPage = 1;

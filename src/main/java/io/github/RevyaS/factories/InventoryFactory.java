@@ -30,19 +30,21 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.yaml.snakeyaml.serializer.Serializer;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.xml.crypto.Data;
 import java.net.SocketImpl;
 import java.util.*;
 import java.util.function.Consumer;
 
+@Singleton
 //Factory Class that generates Inventories
 public class InventoryFactory {
 
     //Inventory Factories
     //func runs when event occurs
-    public static Inventory getMainInv()
+    public Inventory getMainInv()
     {
-
         //Prepare Custom Inventory
         InventoryTitle invT = new InventoryTitle(Text.of("BattlePass"));
         InventoryDimension invD = new InventoryDimension(9, 5);
@@ -88,13 +90,13 @@ public class InventoryFactory {
         btn.offer(Keys.DISPLAY_NAME, btnName);
         lores = new ArrayList<Text>();
         lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Free Battle Pass")); //Battle Pass Type
-        lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Tier " + GlobalData.getCurrTier()));
-        int currTier = GlobalData.getCurrTier();
-        List<Integer> nextTier = GlobalData.getMaxTiers();
+        lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Tier " + globalData.getCurrTier()));
+        int currTier = globalData.getCurrTier();
+        List<Integer> nextTier = globalData.getMaxTiers();
         if(currTier >= nextTier.size())
             lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Max Tier Reached"));
         else
-            lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Next Tier: " + GlobalData.getCurrPoints() + "/" + GlobalData.getMaxTiers().get(currTier)));
+            lores.add(TextSerializers.FORMATTING_CODE.deserialize("&7Next Tier: " + globalData.getCurrPoints() + "/" + globalData.getMaxTiers().get(currTier)));
         btn.offer(Keys.ITEM_LORE, lores);
         btnSlot = inv.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotPos.of(4, 1)));
         btnSlot.set(btn);
@@ -113,7 +115,7 @@ public class InventoryFactory {
     }
 
     //Mission Inventory
-    public static Inventory getMissionsInv()
+    public Inventory getMissionsInv()
     {
 
         InventoryTitle title = new InventoryTitle(Text.of("BattlePass Missions"));
@@ -144,7 +146,7 @@ public class InventoryFactory {
     }
 
     //Daily Missions
-    public static  Inventory getDailyMissions()
+    public Inventory getDailyMissions()
     {
         InventoryTitle title = new InventoryTitle(Text.of("Daily Missions"));
         InventoryDimension dims = new InventoryDimension(9, 5);
@@ -153,7 +155,7 @@ public class InventoryFactory {
                 property("inventorydimension", dims).build(MainPlugin.getInstance());
         //Create missions
         int x = 1, y = 1;
-        for(QuestData qData: GlobalData.getDailyQuests().values())
+        for(QuestData qData: globalData.getDailyQuests().values())
         {
             ItemStack quest = ItemStack.builder().itemType(qData.getIcon()).build();
             quest.offer(Keys.DISPLAY_NAME, Text.of(qData.getDescription()));
@@ -180,14 +182,14 @@ public class InventoryFactory {
         return inv;
     }
 
-    public static Inventory getRewardsInv(int page)
+    public Inventory getRewardsInv(int page)
     {
-        int bpMax = GlobalData.getMaxBp(), length = 9,
+        int bpMax = globalData.getMaxBp(), length = 9,
             pageCount = bpMax / length + 1;
         boolean isPremium = true;
 
         //Create rewards
-        int bpLevel = GlobalData.getCurrTier(),
+        int bpLevel = globalData.getCurrTier(),
             //Compute for page:
             toShow = (length * page > bpMax) ? bpMax % length : length,
             start = (page - 1) * length + 1,
@@ -220,14 +222,14 @@ public class InventoryFactory {
             panelSlot.set(gp);
 
             //Free Reward for this Tier
-            if(!GlobalData.getRewardsMapFree().containsKey(currLevel)) continue;
+            if(!globalData.getRewardsMapFree().containsKey(currLevel)) continue;
             ItemStack reward = generateRewardItem(currLevel, included, false);
             Slot rewardPos = inv.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotPos.of(i, 0)));
             rewardPos.set(reward);
 
             Sponge.getServer().getBroadcastChannel().send(Text.of("Checking Premium"));
             //Premium Reward for this Tier
-            if(!GlobalData.getRewardsMapPremium().containsKey(currLevel)) continue;
+            if(!globalData.getRewardsMapPremium().containsKey(currLevel)) continue;
             Sponge.getServer().getBroadcastChannel().send(Text.of("Load Premium " + currLevel));
             included &= isPremium;
             reward = generateRewardItem(currLevel, included, true);
@@ -270,10 +272,9 @@ public class InventoryFactory {
         return inv;
     }
 
-
     //Returns Item that represents rewards
     //available - if item is available
-    private static ItemStack generateRewardItem(int tier, boolean available, boolean isPremium)
+    private ItemStack generateRewardItem(int tier, boolean available, boolean isPremium)
     {
         //Generate Free rewards
         ItemStack reward = ItemStack.builder().itemType( available ? ItemTypes.CHEST_MINECART : ItemTypes.MINECART).build();
@@ -281,7 +282,7 @@ public class InventoryFactory {
                 deserialize((available ? "&a" : "&c") + "Tier " + tier + " Rewards"));
         //Generate list
         List<Text> itemList = new ArrayList<Text>();
-        DataContainer[] dc = isPremium ? GlobalData.getRewardsMapPremium().get(tier) : GlobalData.getRewardsMapFree().get(tier);
+        DataContainer[] dc = isPremium ? globalData.getRewardsMapPremium().get(tier) : globalData.getRewardsMapFree().get(tier);
 
         for(DataContainer itemData : dc)
         {
@@ -305,9 +306,14 @@ public class InventoryFactory {
         return reward;
     }
 
+    public GlobalData getGlobalData() {
+        return globalData;
+    }
 
-    //Keeps generated inventory due to issues of inventories not opening
-    //Might be caused by the time it takes to generate a new one
-    //So I'll just sacrifice memory for performance
-    //PS. I was stupid and keeping Inventories don't do shit
+    @Inject
+    public InventoryFactory(GlobalData globalData) {
+        this.globalData = globalData;
+    }
+
+    private final GlobalData globalData;
 }

@@ -1,5 +1,9 @@
 package io.github.RevyaS.data.containers;
 
+//import io.github.RevyaS.DAGTest.*;
+import io.github.RevyaS.DAGTest.Car;
+import io.github.RevyaS.DAGTest.DaggerCarComponent;
+import io.github.RevyaS.data.GlobalData;
 import io.github.RevyaS.data.types.QuestType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +31,26 @@ import static org.powermock.api.easymock.PowerMock.verify;
 //@PrepareForTest({FormattingCodeTextSerializer.class,
 //        TextSerializers.class})
 class QuestDataTest {
+    @Mock
+    GlobalData globalData;
+    AutoCloseable autoCloseable;
     private QuestData underTest;
+
+    @BeforeEach
+    public void setup() {
+        autoCloseable = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    public void teardown() throws Exception{
+        autoCloseable.close();
+    }
 
     //QuestData.getDescription()
     @Test
     void isDescriptionCorrectWhenQuestTypeIsWalkingBlocks() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 10);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 10, globalData);
         //when
         TextableString desc = underTest.getDescription();
         //then
@@ -43,7 +60,7 @@ class QuestDataTest {
     @Test
     void isDescriptionCorrectWhenQuestTypeIsNone() {
         //given
-        underTest = new QuestData(QuestType.NONE, 20, 10);
+        underTest = new QuestData(QuestType.NONE, 20, 10, globalData);
         //when
         TextableString desc = underTest.getDescription();
         //then
@@ -53,7 +70,7 @@ class QuestDataTest {
     @Test
     void isDescriptionPresentingCorrectTotalProgressWhenQuestTypeIsWalkingBlocks() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 10);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 10, globalData);
         //when
         TextableString actual = underTest.getDescription();
         //then
@@ -65,7 +82,7 @@ class QuestDataTest {
     @Test
     void isProgressUpdatedButIncomplete() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 20);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 20, globalData);
         underTest.updateProgress(10);
         //when
         TextableString actual = underTest.getProgress();
@@ -77,7 +94,7 @@ class QuestDataTest {
     @Test
     void isProgressUpdatedButCompleted() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 20);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 20, globalData);
         underTest.updateProgress(20);
         //when
         TextableString actual = underTest.getProgress();
@@ -89,7 +106,7 @@ class QuestDataTest {
     @Test
     void isProgressUpdatedButExcessive() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 20);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 20, globalData);
         underTest.updateProgress(30);
         //when
         TextableString actual = underTest.getProgress();
@@ -102,7 +119,7 @@ class QuestDataTest {
     @Test
     void isPointsTextCorrect() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 30);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 20, 30, globalData);
         //when
         TextableString actual = underTest.getPoints();
         //then
@@ -114,7 +131,7 @@ class QuestDataTest {
     @Test
     void isIconNullWhenTypeIsNone() {
         //given
-        underTest = new QuestData(QuestType.NONE, 5, 10);
+        underTest = new QuestData(QuestType.NONE, 5, 10, globalData);
         //when
         ItemType actual = underTest.getIcon();
         //then
@@ -124,7 +141,7 @@ class QuestDataTest {
     @Test
     void isIconNullWhenTypeIsWalkingBlocks() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 5, 10);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 5, 10, globalData);
         //when
         ItemType actual = underTest.getIcon();
         //then
@@ -135,7 +152,7 @@ class QuestDataTest {
     @Test
     void isUpdateProgressAccumulative() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 30);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 30, globalData);
         underTest.updateProgress(20);
         underTest.updateProgress(5);
         //when
@@ -148,7 +165,7 @@ class QuestDataTest {
     @Test
     void isNotCompletedWhenProgressIsInsufficient() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 20);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 20, globalData);
         underTest.updateProgress(30);
         //when
         boolean actual = underTest.isCompleted();
@@ -159,7 +176,7 @@ class QuestDataTest {
     @Test
     void isCompletedWhenProgressIsSufficient() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 20);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 20, globalData);
         underTest.updateProgress(50);
         //when
         boolean actual = underTest.isCompleted();
@@ -170,7 +187,7 @@ class QuestDataTest {
     @Test
     void isCompletedWhenProgressIsExcessive() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 20);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 20, globalData);
         underTest.updateProgress(80);
         //when
         boolean actual = underTest.isCompleted();
@@ -182,7 +199,7 @@ class QuestDataTest {
     @Test
     void isStringRepresentationCorrectWhenTypeIsNull() {
         //given
-        underTest = new QuestData(QuestType.NONE, 50, 30);
+        underTest = new QuestData(QuestType.NONE, 50, 30, globalData);
         //when
         String actual = underTest.toString();
         //then
@@ -192,7 +209,7 @@ class QuestDataTest {
     @Test
     void isStringRepresentationCorrectWhenTypeIsWalkingBlocks() {
         //given
-        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 30);
+        underTest = new QuestData(QuestType.WALK_BLOCK, 50, 30, globalData);
         //when
         String actual = underTest.toString();
         //then

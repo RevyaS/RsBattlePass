@@ -30,6 +30,8 @@ import org.spongepowered.api.text.LiteralText;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -44,7 +46,7 @@ public class BattlePass implements CommandExecutor {
             Text t = LiteralText.builder("You entered the command").toText();
             p.sendMessage(t); //Send message to player
 
-            currInv = InventoryFactory.getMainInv();
+            Inventory currInv = inventoryFactory.getMainInv();
 
             //Show inventory to player
             p.openInventory(currInv);
@@ -54,6 +56,13 @@ public class BattlePass implements CommandExecutor {
         return CommandResult.empty();
     }
 
+    @Inject
+    public BattlePass(InventoryFactory inventoryFactory) {
+        this.inventoryFactory = inventoryFactory;
+    }
+
+    public InventoryFactory getInventoryFactory() {return inventoryFactory;}
+
     //Main Inv, Mission Inv, Reward Inv
-    Inventory currInv;
+    InventoryFactory inventoryFactory;
 }

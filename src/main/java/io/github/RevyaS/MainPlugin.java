@@ -2,45 +2,27 @@ package io.github.RevyaS;
 
 import com.google.inject.Inject;
 import io.github.RevyaS.commands.BattlePass;
-import io.github.RevyaS.data.containers.QuestData;
-import io.github.RevyaS.factories.InventoryFactory;
+import io.github.RevyaS.di.DaggerSingletonComponent;
+import io.github.RevyaS.di.SingletonComponent;
 import io.github.RevyaS.observers.BlockObserver;
 import io.github.RevyaS.observers.InventoryObserver;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import org.slf4j.Logger;
+import jdk.nashorn.internal.ir.Block;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.config.DefaultConfig;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.*;
-import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
-import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.storage.WorldProperties;
-
-import javax.swing.*;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 @Plugin(id = "rsbattlepass", name = "Rs Battlepass", version = "0.0.1", description = "Battlepass System")
 public class MainPlugin {
     @Inject
-    private Logger logger;
-
-    @Inject
     public Game game;
 
     //BP Inventory Command Handler
-    private BattlePass bpComm;
+//    private BattlePass bpComm;
+    SingletonComponent singletonComponent;
 
     private static MainPlugin mp;
 
@@ -50,10 +32,18 @@ public class MainPlugin {
 
     }
 
+//    public String testInject() {
+//        BattlePassSingleton comp = DaggerBattlePassSingleton.create();
+//        comp.inject(this);
+//        return comp1 + " created with " + comp2;
+//    }
+
     @Listener
     public void init(GameInitializationEvent ev)
     {
-        initComm();
+        initDI();
+        BattlePass bpComm = singletonComponent.getBattlePass();
+
         //Command Specifications
         CommandSpec bpAccess = CommandSpec.builder().
                 description(Text.of("Access Battlepass")).
@@ -63,10 +53,12 @@ public class MainPlugin {
         game.getCommandManager().register(this, bpAccess, "battlepass", "bp");
         mp = this;
 
+        InventoryObserver invObs = singletonComponent.getInventoryObserver();
         //Register EventListeners
-//        game.getEventManager().registerListeners(this, InventoryObserver.getInstance());
-//        Sponge.getServer().getBroadcastChannel().send(Text.of("Registering BlockObserver"));
-//        game.getEventManager().registerListeners(this, BlockObserver.getInstance());
+        game.getEventManager().registerListeners(this, invObs);
+        Sponge.getServer().getBroadcastChannel().send(Text.of("Registering BlockObserver"));
+        BlockObserver blkObs = singletonComponent.getBlockObserver();
+        game.getEventManager().registerListeners(this, blkObs);
 
         //TEST AREA
 //        QuestData qd = QuestData.builder().build();
@@ -87,22 +79,23 @@ public class MainPlugin {
 //        logger.info("Clicked Inv Inside");
 //    }
 
-    @Listener
-    public void serverStarts(GameStartedServerEvent ev)
-    {
-        logger.info("Rs Battlepass has started");
-    }
-
-    @Listener
-    public void onServerStop(GameStoppedServerEvent ev)
-    {
-        logger.info("Rs Battlpass has stopped");
-    }
+//    @Listener
+//    public void serverStarts(GameStartedServerEvent ev)
+//    {
+//        logger.info("Rs Battlepass has started");
+//    }
+//
+//    @Listener
+//    public void onServerStop(GameStoppedServerEvent ev)
+//    {
+//        logger.info("Rs Battlpass has stopped");
+//    }
 
     //Init Commands
-    private void initComm()
+    private void initDI()
     {
-        bpComm = new BattlePass();
+        singletonComponent = DaggerSingletonComponent.create();
+
     }
 
 
