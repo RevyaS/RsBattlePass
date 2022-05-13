@@ -106,8 +106,8 @@ public class GlobalData {
     private void initQuestList()
     {
         dailyQuestList = new HashMap<QuestType, QuestData>();
+        //Walk Block Quest
         QuestData qd = new QuestData(QuestType.WALK_BLOCK, 10, 30, this);
-
         dailyQuestList.put(QuestType.WALK_BLOCK, qd);
     }
 

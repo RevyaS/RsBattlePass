@@ -1,3 +1,8 @@
+v.0030 Testings & added Quest types
+	* QuestTypes
+		- Added BLOCK_DESTROY
+	
+
 v.0020 Centralized data for rewards, Quest and point system implementation
     * Main GUI
         - Updated and populated

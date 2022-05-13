@@ -23,7 +23,7 @@ import java.util.Optional;
 public class BlockObserver {
 
     @Listener
-    public  void changedStats(ChangeStatisticEvent.TargetPlayer ev)
+    public void changedStats(ChangeStatisticEvent.TargetPlayer ev)
     {
         if(ev.getStatistic().equals(Statistics.WALK_ONE_CM))
         {
@@ -49,6 +49,13 @@ public class BlockObserver {
         }
 
     }
+
+    @Listener
+    public void breakBlocks()
+    {
+
+    }
+
 
     public GlobalData getGlobalData() {return globalData;}
 

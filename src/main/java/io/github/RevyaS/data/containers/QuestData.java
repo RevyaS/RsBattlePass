@@ -89,7 +89,6 @@ public class QuestData {
     //SETTERS
     public void updateProgress(int addedProgress)
     {
-        Sponge.getServer().getBroadcastChannel().send(Text.of("Updating Progress"));
         currProg += addedProgress;
         if(currProg >= totalProg) {
             completed = true;

@@ -15,6 +15,7 @@ import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
+
 @Plugin(id = "rsbattlepass", name = "Rs Battlepass", version = "0.0.1", description = "Battlepass System")
 public class MainPlugin {
     @Inject
