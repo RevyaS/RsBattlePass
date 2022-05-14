@@ -109,6 +109,9 @@ public class GlobalData {
         //Walk Block Quest
         QuestData qd = new QuestData(QuestType.WALK_BLOCK, 10, 30, this);
         dailyQuestList.put(QuestType.WALK_BLOCK, qd);
+        //Break Blocks
+        qd = new QuestData(QuestType.BLOCK_DESTROY, 10, 30, this);
+        dailyQuestList.put(QuestType.BLOCK_DESTROY, qd);
     }
 
     //Get Nav Map
@@ -143,6 +146,7 @@ public class GlobalData {
         }
     }
 
+
     //Global Variables
     int bpMax = 20, //Max level of BP determines the amount of pages
         currTier = 0, currPoints = 0; //Current Tier Level
@@ -150,6 +154,8 @@ public class GlobalData {
     //List of Display Names that's meant for navigation
     List<String> navList;
     List<Integer> tierMax;
+    //List meant for daily quest names and make them unclickable
+    List<String> dailyQuestsList;
 
     Map<Integer, DataContainer[]> rewardsMapFree;
     Map<Integer, DataContainer[]> rewardsMapPremium;

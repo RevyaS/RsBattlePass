@@ -54,7 +54,7 @@ class QuestDataTest {
         //when
         TextableString desc = underTest.getDescription();
         //then
-        assertThat(desc.toString()).startsWith("Walk").endsWith("blocks");
+        assertThat(desc.toString()).startsWith("Walk").endsWith("Blocks");
     }
 
     @Test
@@ -74,7 +74,7 @@ class QuestDataTest {
         //when
         TextableString actual = underTest.getDescription();
         //then
-        TextableString expected = TextableString.of("Walk 20 blocks");
+        TextableString expected = TextableString.of("Walk 20 Blocks");
         assertThat(actual.toString()).isEqualTo(expected.toString());
     }
 
@@ -213,6 +213,6 @@ class QuestDataTest {
         //when
         String actual = underTest.toString();
         //then
-        assertThat(actual).isEqualTo("WALK_BLOCK:Walk 50 blocks");
+        assertThat(actual).isEqualTo("WALK_BLOCK:Walk 50 Blocks");
     }
 }

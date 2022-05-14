@@ -15,6 +15,8 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import javax.inject.Inject;
 import java.awt.*;
 
+import static java.util.Objects.isNull;
+
 public class QuestData {
     GlobalData globalData;
 
@@ -23,40 +25,24 @@ public class QuestData {
         this.totalProg = totalProg;
         this.type = type;
         this.points = points;
-        description = getDescription();
         this.globalData = globalData;
-        //Set Icon
-        switch (type)
-        {
-            case WALK_BLOCK:
-                icon = ItemTypes.GRASS;
-                break;
-        }
+        icon = type.getType();
     }
 
     //GETTERS
     //Get Texts
     public TextableString getDescription()
     {
-        switch (type)
-        {
-            case WALK_BLOCK:
-                description = TextableString.of("Walk " + totalProg + " blocks");
-                break;
-            default:
-                description = TextableString.of("EMPTY QUEST");
-        }
-        return description;
+        if(isNull(type.getType()))
+            return TextableString.of(type.getPrefix());
+
+        return TextableString.of(type.getPrefix() + " " +
+            totalProg + " " + type.getSuffix());
     }
 
     public TextableString getProgress()
     {
-        String prefix = "";
-        switch (type)
-        {
-            case WALK_BLOCK:
-                prefix = " Travelled";
-        }
+        String prefix = " " + type.getProgressText();
         TextableString t = completed ? TextableString.of("&aCompleted") :
                 TextableString.of("&7" + currProg + "/" + totalProg + prefix);
         return t;
@@ -104,10 +90,9 @@ public class QuestData {
     //    public static QuestDataBuilder builder() {return new QuestDataBuilder();}
 
     private final QuestType type;
-    private TextableString description;
     private int currProg = 0;
     private final int totalProg, points;
-    private ItemType icon; //What the icon looks like
+    private final ItemType icon; //What the icon looks like
     private boolean completed = false;
 
 

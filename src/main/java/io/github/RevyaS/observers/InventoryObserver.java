@@ -53,6 +53,7 @@ public class InventoryObserver {
             return;
         }
 
+        //If itemName is a reward
         if(itemName.contains("Tier") && itemName.contains("Rewards") && item.getType().equals(ItemTypes.CHEST_MINECART))
         {
             Sponge.getServer().getBroadcastChannel().send(Text.of("Reward Item"));

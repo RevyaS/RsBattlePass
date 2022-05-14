@@ -8,6 +8,7 @@ import jdk.nashorn.internal.ir.Block;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.CollideBlockEvent;
 import org.spongepowered.api.event.statistic.ChangeStatisticEvent;
 import org.spongepowered.api.scheduler.Task;
@@ -51,9 +52,12 @@ public class BlockObserver {
     }
 
     @Listener
-    public void breakBlocks()
+    public void breakBlocks(ChangeBlockEvent.Break ev)
     {
-
+        if(!globalData.getDailyQuests().containsKey(QuestType.BLOCK_DESTROY)) return;
+        if(globalData.getDailyQuests().get(QuestType.BLOCK_DESTROY).isCompleted()) return;
+        //Body
+        Sponge.getServer().getBroadcastChannel().send(Text.of("Block Destroyed"));
     }
 
 
